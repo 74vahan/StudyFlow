@@ -11,11 +11,17 @@
 | [05-infra-deploy.md](05-infra-deploy.md) | Окружение, деплой на Vercel |
 | [06-security.md](06-security.md) | Секреты, авторизация, изоляция данных |
 
-## Статус (День 1–2)
-- ✅ Скелет Next.js (App Router, TS) + Tailwind v4.
-- ✅ i18n en/ru/hy (кастомный провайдер + localStorage).
-- ✅ Supabase client stubs (browser/server, @supabase/ssr).
-- ✅ .env.example, документ требований (docs/requirements.md).
-- ⬜ Страницы login/register/tasks/dashboard — День 3–5.
-- ⬜ Supabase проект, таблица tasks, RLS — День 6–8.
+## Статус
+### День 1–2 ✅
+- Скелет Next.js (App Router, TS) + Tailwind v4; i18n en/ru/hy; Supabase stubs; .env.example; требования; memory.
+
+### День 3–5 ✅
+- Страницы: `/` лендинг, `/login`, `/register`, `/dashboard`, `/tasks`, `/tasks/new`, `/tasks/[id]`.
+- CRUD задач, поиск + фильтры (статус/приоритет), dashboard-счётчики.
+- Состояния loading / empty / no-results / error, валидация форм.
+- **Mock-слой (временный):** auth `src/lib/auth/mock-auth.tsx` и хранилище `src/lib/tasks/store.ts` на localStorage. Интерфейсы совпадают с будущим Supabase — заменить в День 6–8.
+- Next.js оказался v16: отключены `cacheComponents`/`partialPrefetching` в next.config.ts (приложение полностью клиентское).
+
+### Дальше
+- ⬜ Supabase проект, таблица tasks, RLS, реальный Auth — День 6–8 (заменить mock-слой).
 - ⬜ AI-роут (Claude API) — День 9–10.

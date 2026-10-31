@@ -3,6 +3,14 @@
     "name": "StudyFlow",
     "tagline": "Organize your studies, hit your deadlines."
   },
+  "common": {
+    "cancel": "Cancel",
+    "back": "Back",
+    "saving": "Saving…",
+    "create": "Create",
+    "update": "Update",
+    "loading": "Loading…"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "tasks": "Tasks",
@@ -17,7 +25,11 @@
     "registerTitle": "Create an account",
     "loginCta": "Log in",
     "registerCta": "Sign up",
-    "invalid": "Invalid email or password."
+    "invalid": "Invalid email or password (min. 6 characters).",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "emailRequired": "Email is required.",
+    "passwordMin": "Password must be at least 6 characters."
   },
   "task": {
     "title": "Title",
@@ -38,12 +50,24 @@
     "statusInProgress": "In progress",
     "statusDone": "Done",
     "empty": "No tasks yet. Create your first one.",
+    "addFirst": "Create a task",
     "loading": "Loading…",
-    "error": "Something went wrong. Please try again."
+    "error": "Something went wrong. Please try again.",
+    "titleRequired": "Title is required.",
+    "noResults": "No tasks match your search or filters.",
+    "confirmDelete": "Delete this task?",
+    "allStatuses": "All statuses",
+    "allPriorities": "All priorities",
+    "noDueDate": "No due date",
+    "editTitle": "Edit task",
+    "notFound": "Task not found."
   },
   "dashboard": {
+    "title": "Dashboard",
     "total": "Total",
     "done": "Done",
-    "inProgress": "In progress"
+    "inProgress": "In progress",
+    "recent": "Recent tasks",
+    "viewAll": "View all tasks"
   }
 }

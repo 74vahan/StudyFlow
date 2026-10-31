@@ -1,11 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useI18n } from "@/i18n/i18n";
+import { useAuth } from "@/lib/auth/mock-auth";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Home() {
   const { t } = useI18n();
+  const { user, ready } = useAuth();
+  const router = useRouter();
+
+  // Signed-in users skip the landing and go straight to the app.
+  useEffect(() => {
+    if (ready && user) router.replace("/dashboard");
+  }, [ready, user, router]);
 
   return (
     <main className="flex flex-1 flex-col">
