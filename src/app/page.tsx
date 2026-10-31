@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useI18n } from "@/i18n/i18n";
-import { useAuth } from "@/lib/auth/mock-auth";
+import { useAuth } from "@/lib/auth/auth";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Home() {

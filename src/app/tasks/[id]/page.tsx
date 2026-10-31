@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { TaskForm } from "@/components/TaskForm";
 import { useI18n } from "@/i18n/i18n";
-import { useAuth } from "@/lib/auth/mock-auth";
+import { useAuth } from "@/lib/auth/auth";
 import { getTask, updateTask } from "@/lib/tasks/store";
 import type { Task, TaskInput } from "@/lib/tasks/types";
 
@@ -19,12 +19,19 @@ function EditTaskView() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTask(getTask(user!.id, params.id));
-    setLoading(false);
+    let active = true;
+    getTask(user!.id, params.id).then((found) => {
+      if (!active) return;
+      setTask(found);
+      setLoading(false);
+    });
+    return () => {
+      active = false;
+    };
   }, [user, params.id]);
 
-  function handleSubmit(input: TaskInput) {
-    updateTask(user!.id, params.id, input);
+  async function handleSubmit(input: TaskInput) {
+    await updateTask(user!.id, params.id, input);
     router.push("/tasks");
   }
 

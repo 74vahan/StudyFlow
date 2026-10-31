@@ -22,6 +22,15 @@
 - **Mock-слой (временный):** auth `src/lib/auth/mock-auth.tsx` и хранилище `src/lib/tasks/store.ts` на localStorage. Интерфейсы совпадают с будущим Supabase — заменить в День 6–8.
 - Next.js оказался v16: отключены `cacheComponents`/`partialPrefetching` в next.config.ts (приложение полностью клиентское).
 
+### День 6–8 ✅ (код готов; реальная БД — после ключей пользователя)
+- SQL-схема `supabase/schema.sql`: таблица `tasks` + RLS (только свои строки) + триггер updated_at.
+- `@supabase/ssr`: клиенты + `src/middleware.ts` (обновление сессии).
+- **Двойной бэкенд:** слой данных и auth переключаются на Supabase, если заданы `NEXT_PUBLIC_SUPABASE_*`, иначе fallback на localStorage. См. `src/lib/supabase/config.ts`.
+- Слой задач стал async: `store.ts` (фасад) → `supabase-store.ts` / `local-store.ts`.
+- Единый `src/lib/auth/auth.tsx` (Supabase Auth или mock). Старый `mock-auth.tsx` удалён.
+- Инструкция: `docs/supabase-setup.md`.
+- ⚠️ Реальная изоляция (AC-04) включается только после настройки Supabase (шаги в docs). Проверено пока в fallback-режиме.
+
 ### Дальше
-- ⬜ Supabase проект, таблица tasks, RLS, реальный Auth — День 6–8 (заменить mock-слой).
+- ⬜ Пользователю: создать проект Supabase, вписать ключи, выполнить schema.sql (docs/supabase-setup.md).
 - ⬜ AI-роут (Claude API) — День 9–10.

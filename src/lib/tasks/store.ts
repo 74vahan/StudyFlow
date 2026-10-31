@@ -1,128 +1,46 @@
 "use client";
 
-import {
-  DEFAULT_PRIORITY,
-  DEFAULT_STATUS,
-  type Priority,
-  type Status,
-  type Task,
-  type TaskInput,
-} from "./types";
+// Facade over the task data layer. Uses Supabase when configured, otherwise the
+// local (localStorage) store. All functions are async so pages/components work
+// the same regardless of backend.
 
-// Mock task repository backed by localStorage. Scoped by userId so one user
-// never sees another's tasks (mirrors the Supabase RLS rule for Day 6-8).
-// Day 6-8: replace this module with Supabase queries; the function signatures
-// are kept identical so pages/components don't change.
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import type { Task, TaskInput } from "./types";
+import type { TaskFilters, TaskStats } from "./contracts";
+import * as local from "./local-store";
+import * as remote from "./supabase-store";
 
-const KEY = "studyflow.tasks";
+export type { TaskFilters, TaskStats } from "./contracts";
 
-export interface TaskFilters {
-  search?: string;
-  status?: Status | "all";
-  priority?: Priority | "all";
+const backend = isSupabaseConfigured ? remote : local;
+
+export function listTasks(
+  userId: string,
+  filters: TaskFilters = {},
+): Promise<Task[]> {
+  return Promise.resolve(backend.listTasks(userId, filters));
 }
 
-function readAll(): Task[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Task[]) : [];
-  } catch {
-    return [];
-  }
+export function getTask(userId: string, id: string): Promise<Task | null> {
+  return Promise.resolve(backend.getTask(userId, id));
 }
 
-function writeAll(tasks: Task[]): void {
-  try {
-    window.localStorage.setItem(KEY, JSON.stringify(tasks));
-  } catch {
-    // Storage unavailable (private mode / quota); mock store is best-effort.
-  }
-}
-
-function newId(): string {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `t_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
-export function listTasks(userId: string, filters: TaskFilters = {}): Task[] {
-  let tasks = readAll().filter((t) => t.userId === userId);
-
-  const search = filters.search?.trim().toLowerCase();
-  if (search) {
-    tasks = tasks.filter((t) => t.title.toLowerCase().includes(search));
-  }
-  if (filters.status && filters.status !== "all") {
-    tasks = tasks.filter((t) => t.status === filters.status);
-  }
-  if (filters.priority && filters.priority !== "all") {
-    tasks = tasks.filter((t) => t.priority === filters.priority);
-  }
-
-  return tasks.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-}
-
-export function getTask(userId: string, id: string): Task | null {
-  return readAll().find((t) => t.id === id && t.userId === userId) ?? null;
-}
-
-export function createTask(userId: string, input: TaskInput): Task {
-  const now = new Date().toISOString();
-  const task: Task = {
-    id: newId(),
-    userId,
-    title: input.title.trim(),
-    description: input.description?.trim() ? input.description.trim() : null,
-    dueDate: input.dueDate || null,
-    priority: input.priority ?? DEFAULT_PRIORITY,
-    status: input.status ?? DEFAULT_STATUS,
-    createdAt: now,
-    updatedAt: now,
-  };
-  writeAll([task, ...readAll()]);
-  return task;
+export function createTask(userId: string, input: TaskInput): Promise<Task> {
+  return Promise.resolve(backend.createTask(userId, input));
 }
 
 export function updateTask(
   userId: string,
   id: string,
   input: TaskInput,
-): Task | null {
-  const all = readAll();
-  const index = all.findIndex((t) => t.id === id && t.userId === userId);
-  if (index === -1) return null;
-
-  const updated: Task = {
-    ...all[index],
-    title: input.title.trim(),
-    description: input.description?.trim() ? input.description.trim() : null,
-    dueDate: input.dueDate || null,
-    priority: input.priority,
-    status: input.status,
-    updatedAt: new Date().toISOString(),
-  };
-  all[index] = updated;
-  writeAll(all);
-  return updated;
+): Promise<Task | null> {
+  return Promise.resolve(backend.updateTask(userId, id, input));
 }
 
-export function deleteTask(userId: string, id: string): void {
-  writeAll(readAll().filter((t) => !(t.id === id && t.userId === userId)));
+export function deleteTask(userId: string, id: string): Promise<void> {
+  return Promise.resolve(backend.deleteTask(userId, id));
 }
 
-export interface TaskStats {
-  total: number;
-  done: number;
-  inProgress: number;
-}
-
-export function taskStats(userId: string): TaskStats {
-  const tasks = readAll().filter((t) => t.userId === userId);
-  return {
-    total: tasks.length,
-    done: tasks.filter((t) => t.status === "done").length,
-    inProgress: tasks.filter((t) => t.status === "in_progress").length,
-  };
+export function taskStats(userId: string): Promise<TaskStats> {
+  return Promise.resolve(backend.taskStats(userId));
 }

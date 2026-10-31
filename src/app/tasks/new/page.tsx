@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { TaskForm } from "@/components/TaskForm";
 import { useI18n } from "@/i18n/i18n";
-import { useAuth } from "@/lib/auth/mock-auth";
+import { useAuth } from "@/lib/auth/auth";
 import { createTask } from "@/lib/tasks/store";
 import type { TaskInput } from "@/lib/tasks/types";
 
@@ -13,8 +13,8 @@ function NewTaskView() {
   const { user } = useAuth();
   const router = useRouter();
 
-  function handleSubmit(input: TaskInput) {
-    createTask(user!.id, input);
+  async function handleSubmit(input: TaskInput) {
+    await createTask(user!.id, input);
     router.push("/tasks");
   }
 

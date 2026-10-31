@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useI18n } from "@/i18n/i18n";
-import { useAuth } from "@/lib/auth/mock-auth";
+import { useAuth } from "@/lib/auth/auth";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const field =
@@ -24,10 +24,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
     if (ready && user) router.replace("/dashboard");
   }, [ready, user, router]);
 
-  function handleSubmit(e: React.FormEvent) {
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitting(true);
     const action = mode === "login" ? login : register;
-    const result = action(email, password);
+    const result = await action(email, password);
+    setSubmitting(false);
     if (result.ok) {
       router.replace("/dashboard");
     } else {
@@ -87,9 +91,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
           <button
             type="submit"
-            className="w-full rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+            disabled={submitting}
+            className="w-full rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60"
           >
-            {cta}
+            {submitting ? t("common.saving") : cta}
           </button>
 
           <p className="text-center text-sm text-foreground/60">

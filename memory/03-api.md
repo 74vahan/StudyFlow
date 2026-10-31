@@ -15,5 +15,12 @@
 - Ключ `ANTHROPIC_API_KEY` только на сервере (process.env).
 - Проверить, что пользователь авторизован, прежде чем тратить AI-вызов.
 
+## Слой данных (День 6–8)
+- `src/lib/tasks/store.ts` — async-фасад. Переключается по `isSupabaseConfigured`:
+  - `supabase-store.ts` — запросы к Supabase (RLS сам фильтрует по пользователю).
+  - `local-store.ts` — fallback на localStorage.
+- Auth: `src/lib/auth/auth.tsx` (Supabase Auth или mock).
+- `src/middleware.ts` — обновление сессии Supabase (no-op без ключей).
+
 ## Статус
-⬜ Роутов пока нет. CRUD и AI-роут — следующие этапы.
+✅ CRUD через слой данных (async). ⬜ AI-роут `/api/ai/plan` — День 9–10.

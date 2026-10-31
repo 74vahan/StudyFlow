@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PriorityBadge, StatusBadge } from "@/components/Badge";
 import { useI18n } from "@/i18n/i18n";
-import { useAuth } from "@/lib/auth/mock-auth";
+import { useAuth } from "@/lib/auth/auth";
 import { listTasks, taskStats, type TaskStats } from "@/lib/tasks/store";
 import type { Task } from "@/lib/tasks/types";
 
@@ -32,9 +32,18 @@ function DashboardView() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setStats(taskStats(userId));
-    setRecent(listTasks(userId).slice(0, 5));
-    setLoading(false);
+    let active = true;
+    Promise.all([taskStats(userId), listTasks(userId)]).then(
+      ([s, all]) => {
+        if (!active) return;
+        setStats(s);
+        setRecent(all.slice(0, 5));
+        setLoading(false);
+      },
+    );
+    return () => {
+      active = false;
+    };
   }, [userId]);
 
   return (

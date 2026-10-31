@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { PriorityBadge, StatusBadge } from "@/components/Badge";
 import { useI18n } from "@/i18n/i18n";
-import { useAuth } from "@/lib/auth/mock-auth";
+import { useAuth } from "@/lib/auth/auth";
 import { deleteTask, listTasks } from "@/lib/tasks/store";
 import {
   PRIORITIES,
@@ -28,25 +28,36 @@ function TasksView() {
   const [priority, setPriority] = useState<Priority | "all">("all");
 
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [hasAnyTasks, setHasAnyTasks] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(() => {
-    setTasks(listTasks(userId, { search, status, priority }));
-    setLoading(false);
+    let cancelled = false;
+    setLoading(true);
+    // Load the filtered list and the full list together, so we can tell
+    // "no tasks at all" apart from "no results for the current filters".
+    Promise.all([
+      listTasks(userId, { search, status, priority }),
+      listTasks(userId),
+    ]).then(([filtered, all]) => {
+      if (cancelled) return;
+      setTasks(filtered);
+      setHasAnyTasks(all.length > 0);
+      setLoading(false);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [userId, search, status, priority]);
 
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  useEffect(() => refresh(), [refresh]);
 
-  // Distinguish "no tasks at all" from "no results for current filters".
-  const hasAnyTasks = listTasks(userId).length > 0;
   const filtersActive =
     search.trim() !== "" || status !== "all" || priority !== "all";
 
-  function handleDelete(id: string) {
+  async function handleDelete(id: string) {
     if (!window.confirm(t("task.confirmDelete"))) return;
-    deleteTask(userId, id);
+    await deleteTask(userId, id);
     refresh();
   }
 

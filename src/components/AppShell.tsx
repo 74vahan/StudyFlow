@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { useI18n } from "@/i18n/i18n";
-import { useAuth } from "@/lib/auth/mock-auth";
+import { useAuth } from "@/lib/auth/auth";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 // Layout + auth guard for protected pages. Redirects to /login when there is
@@ -65,8 +65,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             </span>
             <button
               type="button"
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await logout();
                 router.replace("/login");
               }}
               className="rounded-md border border-foreground/15 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-foreground/5"
