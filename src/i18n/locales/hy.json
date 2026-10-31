@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "StudyFlow",
+    "tagline": "Կազմակերպիր ուսումդ և հասցրու վերջնաժամկետներին։"
+  },
+  "nav": {
+    "dashboard": "Վահանակ",
+    "tasks": "Առաջադրանքներ",
+    "login": "Մուտք",
+    "register": "Գրանցում",
+    "logout": "Ելք"
+  },
+  "auth": {
+    "email": "Էլ. փոստ",
+    "password": "Գաղտնաբառ",
+    "loginTitle": "Մուտք StudyFlow",
+    "registerTitle": "Ստեղծել հաշիվ",
+    "loginCta": "Մուտք",
+    "registerCta": "Գրանցվել",
+    "invalid": "Սխալ էլ. փոստ կամ գաղտնաբառ։"
+  },
+  "task": {
+    "title": "Վերնագիր",
+    "description": "Նկարագրություն",
+    "dueDate": "Վերջնաժամկետ",
+    "priority": "Առաջնահերթություն",
+    "status": "Կարգավիճակ",
+    "new": "Նոր առաջադրանք",
+    "edit": "Խմբագրել",
+    "delete": "Ջնջել",
+    "save": "Պահպանել",
+    "search": "Որոնել ըստ վերնագրի",
+    "aiPlan": "Առաջարկել պլան (AI)",
+    "priorityLow": "Ցածր",
+    "priorityMedium": "Միջին",
+    "priorityHigh": "Բարձր",
+    "statusTodo": "Անելու",
+    "statusInProgress": "Ընթացքում",
+    "statusDone": "Կատարված",
+    "empty": "Դեռ առաջադրանքներ չկան։ Ստեղծիր առաջինը։",
+    "loading": "Բեռնում…",
+    "error": "Ինչ-որ բան սխալ գնաց։ Փորձիր նորից։"
+  },
+  "dashboard": {
+    "total": "Ընդամենը",
+    "done": "Կատարված",
+    "inProgress": "Ընթացքում"
+  }
+}

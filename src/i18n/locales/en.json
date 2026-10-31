@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "StudyFlow",
+    "tagline": "Organize your studies, hit your deadlines."
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Log in to StudyFlow",
+    "registerTitle": "Create an account",
+    "loginCta": "Log in",
+    "registerCta": "Sign up",
+    "invalid": "Invalid email or password."
+  },
+  "task": {
+    "title": "Title",
+    "description": "Description",
+    "dueDate": "Due date",
+    "priority": "Priority",
+    "status": "Status",
+    "new": "New task",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "search": "Search by title",
+    "aiPlan": "Suggest a plan (AI)",
+    "priorityLow": "Low",
+    "priorityMedium": "Medium",
+    "priorityHigh": "High",
+    "statusTodo": "To do",
+    "statusInProgress": "In progress",
+    "statusDone": "Done",
+    "empty": "No tasks yet. Create your first one.",
+    "loading": "Loading…",
+    "error": "Something went wrong. Please try again."
+  },
+  "dashboard": {
+    "total": "Total",
+    "done": "Done",
+    "inProgress": "In progress"
+  }
+}

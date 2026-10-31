@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "StudyFlow",
+    "tagline": "Организуй учёбу и успевай к дедлайнам."
+  },
+  "nav": {
+    "dashboard": "Дашборд",
+    "tasks": "Задачи",
+    "login": "Войти",
+    "register": "Регистрация",
+    "logout": "Выйти"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Пароль",
+    "loginTitle": "Вход в StudyFlow",
+    "registerTitle": "Создать аккаунт",
+    "loginCta": "Войти",
+    "registerCta": "Зарегистрироваться",
+    "invalid": "Неверный email или пароль."
+  },
+  "task": {
+    "title": "Заголовок",
+    "description": "Описание",
+    "dueDate": "Дедлайн",
+    "priority": "Приоритет",
+    "status": "Статус",
+    "new": "Новая задача",
+    "edit": "Изменить",
+    "delete": "Удалить",
+    "save": "Сохранить",
+    "search": "Поиск по заголовку",
+    "aiPlan": "Предложить план (AI)",
+    "priorityLow": "Низкий",
+    "priorityMedium": "Средний",
+    "priorityHigh": "Высокий",
+    "statusTodo": "К выполнению",
+    "statusInProgress": "В процессе",
+    "statusDone": "Выполнено",
+    "empty": "Задач пока нет. Создай первую.",
+    "loading": "Загрузка…",
+    "error": "Что-то пошло не так. Попробуйте ещё раз."
+  },
+  "dashboard": {
+    "total": "Всего",
+    "done": "Выполнено",
+    "inProgress": "В процессе"
+  }
+}
