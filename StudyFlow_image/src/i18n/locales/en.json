@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "StudyFlow",
+    "tagline": "Organize your studies, hit your deadlines."
+  },
+  "common": {
+    "cancel": "Cancel",
+    "back": "Back",
+    "saving": "Saving…",
+    "create": "Create",
+    "update": "Update",
+    "loading": "Loading…"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "teacher": "Teacher",
+    "students": "Students"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "loginTitle": "Log in to StudyFlow",
+    "registerTitle": "Create an account",
+    "loginCta": "Log in",
+    "registerCta": "Sign up",
+    "invalid": "Invalid email or password (min. 6 characters).",
+    "noAccount": "No account yet?",
+    "haveAccount": "Already have an account?",
+    "emailRequired": "Email is required.",
+    "passwordMin": "Password must be at least 6 characters.",
+    "teacherLink": "Log in as teacher",
+    "studentLink": "Student login"
+  },
+  "task": {
+    "title": "Title",
+    "description": "Description",
+    "dueDate": "Due date",
+    "priority": "Priority",
+    "status": "Status",
+    "new": "New task",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "search": "Search by title",
+    "aiPlan": "Suggest a plan (AI)",
+    "priorityLow": "Low",
+    "priorityMedium": "Medium",
+    "priorityHigh": "High",
+    "statusTodo": "To do",
+    "statusInProgress": "In progress",
+    "statusDone": "Done",
+    "empty": "No tasks yet. Create your first one.",
+    "noneAssigned": "No tasks assigned to you yet.",
+    "addFirst": "Create a task",
+    "loading": "Loading…",
+    "error": "Something went wrong. Please try again.",
+    "titleRequired": "Title is required.",
+    "noResults": "No tasks match your search or filters.",
+    "confirmDelete": "Delete this task?",
+    "allStatuses": "All statuses",
+    "allPriorities": "All priorities",
+    "noDueDate": "No due date",
+    "editTitle": "Edit task",
+    "notFound": "Task not found.",
+    "assignedTo": "Assigned to",
+    "yourTasks": "Your tasks"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "total": "Total",
+    "done": "Done",
+    "inProgress": "In progress",
+    "recent": "Recent tasks",
+    "viewAll": "View all tasks"
+  },
+  "pending": {
+    "title": "You're not in a class yet",
+    "message": "Your account is ready, but a teacher hasn't added you to the class yet. Once they do, your tasks will show up here.",
+    "hint": "Ask your teacher to add you, then refresh this page.",
+    "refresh": "Refresh"
+  },
+  "teacher": {
+    "loginTitle": "Teacher login",
+    "pin": "6-digit PIN",
+    "pinCta": "Log in",
+    "pinInvalid": "Wrong PIN.",
+    "pinLocked": "Too many attempts. Try again in a few minutes.",
+    "pinFormat": "Enter 6 digits.",
+    "dashboardTitle": "Teacher panel",
+    "studentsTitle": "Students",
+    "inClass": "In class",
+    "waiting": "Waiting",
+    "addToClass": "Add to class",
+    "removeFromClass": "Remove",
+    "noStudents": "No students have registered yet.",
+    "confirmRemove": "Remove this student from the class? Their tasks will be deleted.",
+    "tasksTitle": "Tasks",
+    "assignTo": "Assign to",
+    "selectStudent": "Select a student",
+    "assignTask": "Assign task",
+    "allStudents": "All students",
+    "noMembers": "Add a student to the class before assigning tasks.",
+    "assigneeNotMember": "That student is not in the class."
+  },
+  "role": {
+    "teacher": "Teacher",
+    "student": "Student"
+  }
+}

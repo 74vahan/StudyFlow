@@ -1,0 +1,40 @@
+# StudyFlow local stack: MySQL + the app.
+# Run from this folder:  docker compose up        (just the DB: docker compose up db)
+# The DB auto-creates the schema from ./db/schema.sql on first start.
+
+services:
+  db:
+    image: mysql:8
+    container_name: studyflow-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: studyflow
+      MYSQL_DATABASE: studyflow
+    ports:
+      - "3307:3306" # host 3307 → container 3306 (matches .env.local for local dev)
+    volumes:
+      - studyflow_db:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d:ro # schema.sql runs on first init
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pstudyflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: ../StudyFlow_image
+      dockerfile: ../StudyFlow_infra/Dockerfile
+    container_name: studyflow-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Inside the compose network the DB is reachable as host "db" on 3306.
+      DATABASE_URL: mysql://root:studyflow@db:3306/studyflow
+      AUTH_SECRET: ${AUTH_SECRET:-change-me-in-a-real-env-use-a-long-random-string}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "3000:3000"
+
+volumes:
+  studyflow_db:

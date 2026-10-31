@@ -1,26 +1,47 @@
 # 03 — API
 
 ## Подход
-- CRUD задач — через Supabase client (@supabase/ssr) из Server Components / Server Actions. RLS сам ограничивает доступ по пользователю.
-- AI — отдельный серверный Route Handler, чтобы ключ Claude не попадал в браузер.
+- Весь доступ к данным и авторизация — на сервере (Route Handlers, `runtime="nodejs"`).
+- Роль — в сессионном JWT (`role: 'student'|'teacher'`). Учитель — `userId:'teacher'`, без записи в БД.
+- Клиент ходит через `fetch`; `assignee_id` для ученика берётся из сессии, не из запроса.
 
-## Роуты (план)
-| Роут | Метод | Назначение | Статус |
+## Авторизация ученика
+| Роут | Метод | Назначение |
+|---|---|---|
+| `/api/auth/register` | POST | создать ученика (bcrypt) + сессия (role student). 409 если email занят |
+| `/api/auth/login` | POST | проверка bcrypt → сессия; ответ `{user, inClass}` |
+| `/api/auth/logout` | POST | удалить cookie (общий для обеих ролей) |
+| `/api/auth/me` | GET | `{user:{id,email,role}, inClass}` — используется клиентом для гейта |
+
+## Авторизация учителя (PIN)
+| Роут | Метод | Назначение |
+|---|---|---|
+| `/api/teacher/login` | POST | `{pin}` (6 цифр) → bcrypt.compare с `TEACHER_PIN_HASH_B64` (base64→hash); rate-limit+lockout (`lib/auth/rate-limit.ts`); 429 locked / 401 invalid |
+| `/api/teacher/logout` | POST | удалить cookie |
+
+## Управление учениками (только учитель)
+| Роут | Метод | Назначение |
+|---|---|---|
+| `/api/teacher/students` | GET | все ученики + флаг `inClass` |
+| `/api/teacher/students/[id]` | POST / DELETE | добавить в класс / убрать (каскад задач) |
+
+## Задачи (роль-зависимо)
+| Роут | Метод | Учитель | Ученик |
 |---|---|---|---|
-| `/api/ai/plan` | POST | `{ description }` → Claude API → план шагов | ⬜ День 9–10 |
+| `/api/tasks` | GET | все (+`?assignee`) | только свои |
+| `/api/tasks` | POST | создать `{assigneeId,...}` (403 иначе; 400 assignee_not_member) | — |
+| `/api/tasks/[id]` | GET | любая | своя (404 иначе) |
+| `/api/tasks/[id]` | PATCH | полное редактирование | только `{status}` своей |
+| `/api/tasks/[id]` | DELETE | да | 403 |
 
-### `/api/ai/plan` — требования
-- Валидировать вход: пустое/слишком короткое описание → 400 + понятное сообщение (AC-07).
-- Обработать ошибку/таймаут Claude API → 502 + безопасное сообщение, без утечки деталей.
-- Ключ `ANTHROPIC_API_KEY` только на сервере (process.env).
-- Проверить, что пользователь авторизован, прежде чем тратить AI-вызов.
+## AI-роут (план, День 9–10)
+`/api/ai/plan` POST `{description}` → Claude API. Валидация пустого ввода (AC-07),
+`ANTHROPIC_API_KEY` только на сервере, проверка сессии.
 
-## Слой данных (День 6–8)
-- `src/lib/tasks/store.ts` — async-фасад. Переключается по `isSupabaseConfigured`:
-  - `supabase-store.ts` — запросы к Supabase (RLS сам фильтрует по пользователю).
-  - `local-store.ts` — fallback на localStorage.
-- Auth: `src/lib/auth/auth.tsx` (Supabase Auth или mock).
-- `src/middleware.ts` — обновление сессии Supabase (no-op без ключей).
+## Слои
+- Сессия: `lib/auth/session.ts` (jose, роль, edge-safe), `current-user.ts` (cookie).
+- Класс: `lib/class/members.ts`. Задачи: `lib/tasks/mysql-store.ts` (сервер), `store.ts` (клиент), `lib/teacher/api.ts` (клиент, ученики).
+- Гейт: `src/proxy.ts` (роутинг по роли) + AppShell (членство → /pending).
 
 ## Статус
-✅ CRUD через слой данных (async). ⬜ AI-роут `/api/ai/plan` — День 9–10.
+✅ Все роуты готовы и проверены вживую. ⬜ `/api/ai/plan` — День 9–10.

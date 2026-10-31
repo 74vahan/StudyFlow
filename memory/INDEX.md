@@ -22,15 +22,32 @@
 - **Mock-слой (временный):** auth `src/lib/auth/mock-auth.tsx` и хранилище `src/lib/tasks/store.ts` на localStorage. Интерфейсы совпадают с будущим Supabase — заменить в День 6–8.
 - Next.js оказался v16: отключены `cacheComponents`/`partialPrefetching` в next.config.ts (приложение полностью клиентское).
 
-### День 6–8 ✅ (код готов; реальная БД — после ключей пользователя)
-- SQL-схема `supabase/schema.sql`: таблица `tasks` + RLS (только свои строки) + триггер updated_at.
-- `@supabase/ssr`: клиенты + `src/middleware.ts` (обновление сессии).
-- **Двойной бэкенд:** слой данных и auth переключаются на Supabase, если заданы `NEXT_PUBLIC_SUPABASE_*`, иначе fallback на localStorage. См. `src/lib/supabase/config.ts`.
-- Слой задач стал async: `store.ts` (фасад) → `supabase-store.ts` / `local-store.ts`.
-- Единый `src/lib/auth/auth.tsx` (Supabase Auth или mock). Старый `mock-auth.tsx` удалён.
-- Инструкция: `docs/supabase-setup.md`.
-- ⚠️ Реальная изоляция (AC-04) включается только после настройки Supabase (шаги в docs). Проверено пока в fallback-режиме.
+### День 6–8 ✅ (код готов; реальная БД — после установки MySQL)
+> Стек БД сменён на **MySQL** (требование преподавателя) — Supabase убран целиком.
+- Схема `db/schema.sql`: таблицы `users` + `tasks` (FK, индекс, ENUM, updated_at).
+- Драйвер `mysql2`, пул `src/lib/db/mysql.ts` (одна переменная `DATABASE_URL`).
+- **Своя серверная авторизация:** bcrypt (`bcryptjs`) + JWT-сессия в HTTP-only cookie (`jose`). Роуты `/api/auth/{register,login,logout,me}`.
+- Доступ к данным переехал на сервер: роуты `/api/tasks` + `/api/tasks/[id]`, изоляция `WHERE user_id = ?` по сессии (AC-04 без RLS).
+- Клиент: `store.ts` (fetch-фасад), `auth.tsx` (через /api/auth/*). Гейт — `src/proxy.ts` (бывш. middleware).
+- localStorage-fallback убран.
+- ✅ **Проверено вживую** (Docker MySQL): регистрация/вход/выход, CRUD, сохранение и изоляция AC-04 (alice видит свою задачу, bob — нет). TypeScript чист, `npm run build` проходит.
+
+### Реструктуризация в монорепо ✅ (2026-10-31)
+> Требование преподавателя: разделить на две папки.
+- `StudyFlow_image/` — всё приложение (frontend + backend), `StudyFlow_infra/` — инфраструктура.
+- `StudyFlow_infra/`: Dockerfile (standalone-образ), docker-compose (MySQL+app, порт 3307, авто-схема), `db/schema.sql`, `docs/mysql-setup.md`, `docs/deploy.md`.
+- Корневой `package.json` проксирует команды в приложение; `next.config.ts` → `output: 'standalone'`.
+- ✅ Проверено после переноса: `npm run build` и вход/задачи работают из нового расположения.
+
+### Редизайн «учитель → ученики» ✅ (2026-10-31)
+> Смена сути: из личного таск-менеджера в классную систему (паттерны из Miasin).
+- Один учитель (вход по 6-значному PIN: bcrypt-хеш в `TEACHER_PIN_HASH_B64` (base64), rate-limit+lockout). Dev-PIN 123456.
+- Ученики (email+пароль, роль student). Один класс (`class_members`). Не-член → экран `/pending` («404/не в классе»).
+- Учитель (`/teacher`): список учеников, добавить/убрать из класса, выдать задачу конкретному ученику.
+- Ученик: видит только свои задачи (`assignee_id` из сессии), меняет только статус.
+- Схема переделана (`users`+`class_members`+`tasks.assignee_id`+FK). Роль в JWT, роутинг в `proxy.ts`, членство в AppShell через `/api/auth/me`.
+- i18n (en/ru/hy) дополнена. ✅ Проверено вживую (Docker MySQL): весь флоу.
 
 ### Дальше
-- ⬜ Пользователю: создать проект Supabase, вписать ключи, выполнить schema.sql (docs/supabase-setup.md).
+- ⬜ Пользователю для нового окружения: `StudyFlow_image/.env.local` (`DATABASE_URL`, `AUTH_SECRET`, `TEACHER_PIN_HASH_B64`); локально проще `docker compose up` из `StudyFlow_infra/`.
 - ⬜ AI-роут (Claude API) — День 9–10.

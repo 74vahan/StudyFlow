@@ -1,0 +1,113 @@
+{
+  "app": {
+    "name": "StudyFlow",
+    "tagline": "Организуй учёбу и успевай к дедлайнам."
+  },
+  "common": {
+    "cancel": "Отмена",
+    "back": "Назад",
+    "saving": "Сохранение…",
+    "create": "Создать",
+    "update": "Сохранить",
+    "loading": "Загрузка…"
+  },
+  "nav": {
+    "dashboard": "Дашборд",
+    "tasks": "Задачи",
+    "login": "Войти",
+    "register": "Регистрация",
+    "logout": "Выйти",
+    "teacher": "Учитель",
+    "students": "Ученики"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Пароль",
+    "loginTitle": "Вход в StudyFlow",
+    "registerTitle": "Создать аккаунт",
+    "loginCta": "Войти",
+    "registerCta": "Зарегистрироваться",
+    "invalid": "Неверный email или пароль (минимум 6 символов).",
+    "noAccount": "Ещё нет аккаунта?",
+    "haveAccount": "Уже есть аккаунт?",
+    "emailRequired": "Укажите email.",
+    "passwordMin": "Пароль должен быть не короче 6 символов.",
+    "teacherLink": "Войти как учитель",
+    "studentLink": "Вход для ученика"
+  },
+  "task": {
+    "title": "Заголовок",
+    "description": "Описание",
+    "dueDate": "Дедлайн",
+    "priority": "Приоритет",
+    "status": "Статус",
+    "new": "Новая задача",
+    "edit": "Изменить",
+    "delete": "Удалить",
+    "save": "Сохранить",
+    "search": "Поиск по заголовку",
+    "aiPlan": "Предложить план (AI)",
+    "priorityLow": "Низкий",
+    "priorityMedium": "Средний",
+    "priorityHigh": "Высокий",
+    "statusTodo": "К выполнению",
+    "statusInProgress": "В процессе",
+    "statusDone": "Выполнено",
+    "empty": "Задач пока нет. Создай первую.",
+    "noneAssigned": "Тебе пока не выдали задач.",
+    "addFirst": "Создать задачу",
+    "loading": "Загрузка…",
+    "error": "Что-то пошло не так. Попробуйте ещё раз.",
+    "titleRequired": "Укажите заголовок.",
+    "noResults": "Нет задач по заданному поиску или фильтрам.",
+    "confirmDelete": "Удалить эту задачу?",
+    "allStatuses": "Все статусы",
+    "allPriorities": "Все приоритеты",
+    "noDueDate": "Без дедлайна",
+    "editTitle": "Редактировать задачу",
+    "notFound": "Задача не найдена.",
+    "assignedTo": "Назначено",
+    "yourTasks": "Твои задачи"
+  },
+  "dashboard": {
+    "title": "Дашборд",
+    "total": "Всего",
+    "done": "Выполнено",
+    "inProgress": "В процессе",
+    "recent": "Последние задачи",
+    "viewAll": "Все задачи"
+  },
+  "pending": {
+    "title": "Ты ещё не в классе",
+    "message": "Аккаунт создан, но учитель пока не добавил тебя в класс. Как только добавит — здесь появятся твои задачи.",
+    "hint": "Попроси учителя добавить тебя и обнови страницу.",
+    "refresh": "Обновить"
+  },
+  "teacher": {
+    "loginTitle": "Вход для учителя",
+    "pin": "6-значный PIN",
+    "pinCta": "Войти",
+    "pinInvalid": "Неверный PIN.",
+    "pinLocked": "Слишком много попыток. Попробуйте через несколько минут.",
+    "pinFormat": "Введите 6 цифр.",
+    "dashboardTitle": "Панель учителя",
+    "studentsTitle": "Ученики",
+    "inClass": "В классе",
+    "waiting": "Ожидают",
+    "addToClass": "Добавить в класс",
+    "removeFromClass": "Убрать",
+    "noStudents": "Пока никто не зарегистрировался.",
+    "confirmRemove": "Убрать ученика из класса? Его задачи будут удалены.",
+    "tasksTitle": "Задачи",
+    "assignTo": "Назначить",
+    "selectStudent": "Выбери ученика",
+    "assignTask": "Выдать задачу",
+    "allStudents": "Все ученики",
+    "noMembers": "Сначала добавь ученика в класс, чтобы выдавать задачи.",
+    "assigneeNotMember": "Этот ученик не в классе."
+  },
+  "role": {
+    "teacher": "Учитель",
+    "student": "Ученик"
+  }
+}
