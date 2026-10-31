@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useI18n } from "@/i18n/i18n";
 import { useAuth } from "@/lib/auth/auth";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SnakeGame } from "@/components/SnakeGame";
 
 export default function PendingPage() {
   const { t } = useI18n();
@@ -19,40 +20,43 @@ export default function PendingPage() {
   }, [ready, user, inClass, router]);
 
   return (
-    <main className="flex min-h-full flex-1 flex-col">
-      <header className="flex items-center justify-between px-6 py-4">
+    <main className="relative flex min-h-full flex-1 flex-col overflow-hidden bg-[#0b0f0d] text-white">
+      {/* Playable Snake running in the background */}
+      <SnakeGame />
+
+      <header className="relative z-10 flex items-center justify-between px-6 py-4">
         <span className="text-lg font-semibold">{t("app.name")}</span>
         <LanguageSwitcher />
       </header>
 
-      <section className="flex flex-1 flex-col items-center justify-center gap-6 px-4 text-center">
-        <p className="text-7xl font-bold text-foreground/15 select-none">404</p>
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold">{t("pending.title")}</h1>
-          <p className="max-w-md text-balance text-foreground/70">
-            {t("pending.message")}
-          </p>
-          <p className="text-sm text-foreground/50">{t("pending.hint")}</p>
-        </div>
+      <section className="relative z-10 flex flex-1 items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/55 p-8 text-center shadow-xl backdrop-blur-sm">
+          <p className="select-none text-6xl font-bold text-white/20">404</p>
+          <h1 className="mt-2 text-2xl font-semibold">{t("pending.title")}</h1>
+          <p className="mt-2 text-balance text-white/70">{t("pending.message")}</p>
+          <p className="mt-1 text-sm text-white/50">{t("pending.hint")}</p>
 
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
-          >
-            {t("pending.refresh")}
-          </button>
-          <button
-            type="button"
-            onClick={async () => {
-              await logout();
-              router.replace("/login");
-            }}
-            className="rounded-md border border-foreground/15 px-4 py-2 text-sm font-medium transition-colors hover:bg-foreground/5"
-          >
-            {t("nav.logout")}
-          </button>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#0b0f0d] transition-opacity hover:opacity-90"
+            >
+              {t("pending.refresh")}
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                await logout();
+                router.replace("/login");
+              }}
+              className="rounded-md border border-white/25 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+            >
+              {t("nav.logout")}
+            </button>
+          </div>
+
+          <p className="mt-5 text-xs text-white/40">{t("pending.play")}</p>
         </div>
       </section>
     </main>
