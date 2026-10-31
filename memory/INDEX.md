@@ -48,6 +48,13 @@
 - Схема переделана (`users`+`class_members`+`tasks.assignee_id`+FK). Роль в JWT, роутинг в `proxy.ts`, членство в AppShell через `/api/auth/me`.
 - i18n (en/ru/hy) дополнена. ✅ Проверено вживую (Docker MySQL): весь флоу.
 
+### UI-доработки ✅
+- Лендинг `/`: анимация «Welcome» рукописным шрифтом (пишется один раз, чёрный фон).
+- `/pending`: играбельная Змейка на фоне (`SnakeGame`), панель с 404 поверх.
+
+### Коммиты (на `main`, не запушены)
+`e55ff1d`, `c5b99a7`, `eb062bc` (старое) · `7027483` MySQL+монорепо+редизайн · `0509ddd` анимация лендинга · `90865c9` Змейка. Итого 6.
+
 ### Дальше
 - ⬜ Пользователю для нового окружения: `StudyFlow_image/.env.local` (`DATABASE_URL`, `AUTH_SECRET`, `TEACHER_PIN_HASH_B64`); локально проще `docker compose up` из `StudyFlow_infra/`.
-- ⬜ AI-роут (Claude API) — День 9–10.
+- ⬜ AI-роут (Claude API) — День 9–10. ⬜ Пуш на GitHub (приватный репо) — по просьбе.
