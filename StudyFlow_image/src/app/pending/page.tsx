@@ -31,8 +31,7 @@ export default function PendingPage() {
 
       <section className="relative z-10 flex flex-1 items-center justify-center px-4">
         <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/55 p-8 text-center shadow-xl backdrop-blur-sm">
-          <p className="select-none text-6xl font-bold text-white/20">404</p>
-          <h1 className="mt-2 text-2xl font-semibold">{t("pending.title")}</h1>
+          <h1 className="text-2xl font-semibold">{t("pending.title")}</h1>
           <p className="mt-2 text-balance text-white/70">{t("pending.message")}</p>
           <p className="mt-1 text-sm text-white/50">{t("pending.hint")}</p>
 
