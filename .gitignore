@@ -15,3 +15,6 @@
 .DS_Store
 *.pem
 npm-debug.log*
+
+# vendored agent skill (kept locally, not in repo)
+.claude/skills/design-taste-frontend/

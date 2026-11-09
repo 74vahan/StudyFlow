@@ -12,8 +12,7 @@ import {
 } from "@/lib/tasks/types";
 import type { Student } from "@/lib/teacher/api";
 
-const field =
-  "w-full rounded-md border border-foreground/15 bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40";
+const field = "rf-field text-sm";
 
 interface Props {
   members: Student[]; // students currently in the class
@@ -34,9 +33,9 @@ export function TeacherTasks({ members }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const emailById = useMemo(() => {
+  const nameById = useMemo(() => {
     const m = new Map<string, string>();
-    members.forEach((s) => m.set(s.id, s.email));
+    members.forEach((s) => m.set(s.id, `${s.lastName} ${s.firstName}`.trim()));
     return m;
   }, [members]);
 
@@ -93,20 +92,20 @@ export function TeacherTasks({ members }: Props) {
 
   return (
     <section className="space-y-5">
-      <h2 className="text-lg font-semibold">{t("teacher.tasksTitle")}</h2>
+      <h2 className="text-xl font-bold">{t("teacher.tasksTitle")}</h2>
 
       {members.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-foreground/15 py-6 text-center text-foreground/60">
+        <p className="rf-card-dashed py-6 text-center text-ink/60">
           {t("teacher.noMembers")}
         </p>
       ) : (
         <form
           onSubmit={handleAssign}
-          className="space-y-3 rounded-xl border border-foreground/10 p-4"
+          className="rf-card space-y-3 p-4"
         >
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">
+              <label className="mb-1 block text-sm font-semibold">
                 {t("teacher.assignTo")}
               </label>
               <select
@@ -117,13 +116,13 @@ export function TeacherTasks({ members }: Props) {
                 <option value="">{t("teacher.selectStudent")}</option>
                 {members.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.email}
+                    {s.lastName} {s.firstName}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">
+              <label className="mb-1 block text-sm font-semibold">
                 {t("task.title")}
               </label>
               <input
@@ -135,7 +134,7 @@ export function TeacherTasks({ members }: Props) {
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium">
+            <label className="mb-1 block text-sm font-semibold">
               {t("task.description")}
             </label>
             <textarea
@@ -148,7 +147,7 @@ export function TeacherTasks({ members }: Props) {
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">
+              <label className="mb-1 block text-sm font-semibold">
                 {t("task.dueDate")}
               </label>
               <input
@@ -159,7 +158,7 @@ export function TeacherTasks({ members }: Props) {
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">
+              <label className="mb-1 block text-sm font-semibold">
                 {t("task.priority")}
               </label>
               <select
@@ -176,12 +175,12 @@ export function TeacherTasks({ members }: Props) {
             </div>
           </div>
 
-          {error && <p className="text-sm text-rose-600">{error}</p>}
+          {error && <p className="text-sm font-semibold text-coral">{error}</p>}
 
           <button
             type="submit"
             disabled={saving}
-            className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-60"
+            className="btn btn-primary"
           >
             {saving ? t("common.saving") : t("teacher.assignTask")}
           </button>
@@ -198,16 +197,16 @@ export function TeacherTasks({ members }: Props) {
           <option value="">{t("teacher.allStudents")}</option>
           {members.map((s) => (
             <option key={s.id} value={s.id}>
-              {s.email}
+              {s.lastName} {s.firstName}
             </option>
           ))}
         </select>
       </div>
 
       {loading ? (
-        <p className="text-foreground/60">{t("task.loading")}</p>
+        <p className="text-ink/60">{t("task.loading")}</p>
       ) : tasks.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-foreground/15 py-8 text-center text-foreground/60">
+        <p className="rf-card-dashed py-8 text-center text-ink/60">
           {t("task.empty")}
         </p>
       ) : (
@@ -215,12 +214,12 @@ export function TeacherTasks({ members }: Props) {
           {tasks.map((task) => (
             <li
               key={task.id}
-              className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-foreground/10 p-4"
+              className="flex flex-wrap items-center gap-x-4 gap-y-2 rf-card rf-card-hover p-4"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate font-medium">{task.title}</p>
-                <p className="text-xs text-foreground/50">
-                  {t("task.assignedTo")}: {emailById.get(task.assigneeId) ?? task.assigneeId}
+                <p className="truncate font-semibold">{task.title}</p>
+                <p className="text-xs text-ink/50">
+                  {t("task.assignedTo")}: {nameById.get(task.assigneeId) ?? task.assigneeId}
                   {" · "}
                   {task.dueDate ?? t("task.noDueDate")}
                 </p>
@@ -230,7 +229,7 @@ export function TeacherTasks({ members }: Props) {
               <button
                 type="button"
                 onClick={() => handleDelete(task.id)}
-                className="rounded-md border border-rose-300 px-3 py-1.5 text-sm text-rose-700 transition-colors hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                className="btn btn-danger btn-sm"
               >
                 {t("task.delete")}
               </button>

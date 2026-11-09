@@ -6,7 +6,9 @@ import { getPool } from "@/lib/db/mysql";
 
 export interface StudentRow {
   id: string;
-  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   inClass: boolean;
   joinedAt: string | null;
 }
@@ -17,7 +19,9 @@ interface MemberCheckRow extends RowDataPacket {
 
 interface StudentQueryRow extends RowDataPacket {
   id: string;
-  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
   joined_at: Date | null;
 }
 
@@ -47,14 +51,16 @@ export async function removeMember(userId: string): Promise<void> {
 // All registered students with their membership status (members first).
 export async function listStudents(): Promise<StudentRow[]> {
   const [rows] = await getPool().query<StudentQueryRow[]>(
-    `SELECT u.id, u.email, cm.joined_at
+    `SELECT u.id, u.first_name, u.last_name, u.phone, cm.joined_at
        FROM users u
        LEFT JOIN class_members cm ON cm.user_id = u.id
-      ORDER BY (cm.user_id IS NOT NULL) DESC, u.email ASC`,
+      ORDER BY (cm.user_id IS NOT NULL) DESC, u.last_name ASC, u.first_name ASC`,
   );
   return rows.map((r) => ({
     id: r.id,
-    email: r.email,
+    firstName: r.first_name,
+    lastName: r.last_name,
+    phone: r.phone,
     inClass: r.joined_at !== null,
     joinedAt: r.joined_at ? new Date(r.joined_at).toISOString() : null,
   }));

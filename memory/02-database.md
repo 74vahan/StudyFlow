@@ -5,12 +5,22 @@
 `StudyFlow_infra/docs/mysql-setup.md`.
 
 ## Таблица `users` (ученики)
+> С 2026-11-07: вход по **имени+фамилии+паролю**, `email` убран. `phone` (номер) —
+> уникальный ключ аккаунта. Имя+фамилия НЕ уникальны: двое могут иметь одинаковое имя,
+> но различаются по `phone`; при входе их разводит проверка пароля на сервере.
+
 | Поле | Тип | Примечание |
 |---|---|---|
 | id | CHAR(36) PK | UUID (`crypto.randomUUID()`) |
-| email | VARCHAR(255) UNIQUE | логин ученика |
+| first_name | VARCHAR(100) NOT NULL | имя |
+| last_name | VARCHAR(100) NOT NULL | фамилия |
+| phone | VARCHAR(30) NOT NULL UNIQUE | номер — уникальный ключ аккаунта |
 | password_hash | VARCHAR(255) | bcrypt (раунды 10) |
 | created_at | TIMESTAMP | default CURRENT_TIMESTAMP |
+
+Индекс: `idx_users_name (last_name, first_name)` — поиск при входе.
+Миграция живой dev-БД: `ALTER TABLE` (add first_name/last_name/phone, backfill, drop email).
+В БД есть legacy-строки с прошлого стека (phone = обрезок id) — мусор, можно игнорировать.
 
 ## Таблица `class_members` (единственный класс)
 | Поле | Тип | Примечание |

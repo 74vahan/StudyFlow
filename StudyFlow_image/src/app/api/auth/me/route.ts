@@ -12,14 +12,19 @@ export async function GET() {
 
   if (session.role === "teacher") {
     return NextResponse.json({
-      user: { id: session.userId, email: null, role: "teacher" },
+      user: { id: session.userId, firstName: null, lastName: null, role: "teacher" },
       inClass: true,
     });
   }
 
   const inClass = await isMember(session.userId);
   return NextResponse.json({
-    user: { id: session.userId, email: session.email, role: "student" },
+    user: {
+      id: session.userId,
+      firstName: session.firstName,
+      lastName: session.lastName,
+      role: "student",
+    },
     inClass,
   });
 }

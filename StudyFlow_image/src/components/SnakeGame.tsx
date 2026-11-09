@@ -112,10 +112,11 @@ export function SnakeGame() {
       const w = el.clientWidth;
       const h = el.clientHeight;
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = "#0b0f0d";
+      // Atompunk board: warm cream with faint ink grid.
+      ctx.fillStyle = "#ece0c3";
       ctx.fillRect(0, 0, w, h);
 
-      ctx.strokeStyle = "rgba(255,255,255,0.03)";
+      ctx.strokeStyle = "rgba(43,36,32,0.06)";
       ctx.lineWidth = 1;
       for (let x = 0; x <= cols; x++) {
         ctx.beginPath();
@@ -130,12 +131,13 @@ export function SnakeGame() {
         ctx.stroke();
       }
 
-      ctx.fillStyle = "#f59e0b";
+      // Food: teal. Snake: tangerine body, mustard head.
+      ctx.fillStyle = "#11999e";
       roundRect(ctx, food.x * CELL + 3, food.y * CELL + 3, CELL - 6, CELL - 6, 4);
       ctx.fill();
 
       snake.forEach((s, i) => {
-        ctx.fillStyle = i === 0 ? "#34d399" : "#10b981";
+        ctx.fillStyle = i === 0 ? "#edab25" : "#f26419";
         roundRect(ctx, s.x * CELL + 2, s.y * CELL + 2, CELL - 4, CELL - 4, 5);
         ctx.fill();
       });
@@ -178,7 +180,7 @@ export function SnakeGame() {
   return (
     <>
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" aria-hidden="true" />
-      <div className="pointer-events-none absolute left-4 top-16 z-20 select-none text-sm font-medium text-white/70">
+      <div className="pointer-events-none absolute left-4 top-16 z-20 select-none text-sm font-bold text-ink/70">
         🐍 {score}
       </div>
     </>

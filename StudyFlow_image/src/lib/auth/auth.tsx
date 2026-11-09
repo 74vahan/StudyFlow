@@ -9,7 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { isValidCredentials } from "./validation";
+import { isValidLogin, isValidRegistration } from "./validation";
 
 // Client auth provider. Talks to the server session routes; the real session
 // lives in an HTTP-only cookie the browser can't read, so here we only mirror
@@ -19,20 +19,35 @@ export type Role = "student" | "teacher";
 
 export interface AppUser {
   id: string;
-  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
   role: Role;
+}
+
+export interface RegisterInput {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface LoginInput {
+  firstName: string;
+  lastName: string;
+  password: string;
 }
 
 export type AuthResult =
   | { ok: true }
-  | { ok: false; error: "invalid" | "locked" };
+  | { ok: false; error: "invalid" | "locked" | "server" };
 
 interface AuthContextValue {
   user: AppUser | null;
   inClass: boolean;
   ready: boolean;
-  login: (email: string, password: string) => Promise<AuthResult>;
-  register: (email: string, password: string) => Promise<AuthResult>;
+  login: (input: LoginInput) => Promise<AuthResult>;
+  register: (input: RegisterInput) => Promise<AuthResult>;
   teacherLogin: (pin: string) => Promise<AuthResult>;
   logout: () => Promise<void>;
 }
@@ -73,33 +88,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setInClass(!!data.inClass);
   }, []);
 
-  const studentAuth = useCallback(
-    async (path: string, email: string, password: string): Promise<AuthResult> => {
-      if (!isValidCredentials(email, password)) {
-        return { ok: false, error: "invalid" };
+  const postAuth = useCallback(
+    async (path: string, payload: Record<string, string>): Promise<AuthResult> => {
+      let res: Response;
+      try {
+        res = await fetch(path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+      } catch {
+        // Network error — server unreachable, not a credentials problem.
+        return { ok: false, error: "server" };
       }
-      const res = await fetch(path, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
-      });
-      if (!res.ok) return { ok: false, error: "invalid" };
-      applyAuth((await res.json()) as MeResponse);
-      return { ok: true };
+      if (res.ok) {
+        applyAuth((await res.json()) as MeResponse);
+        return { ok: true };
+      }
+      // 5xx means the server/DB failed; 4xx means bad credentials.
+      return { ok: false, error: res.status >= 500 ? "server" : "invalid" };
     },
     [applyAuth],
   );
 
   const login = useCallback(
-    (email: string, password: string) =>
-      studentAuth("/api/auth/login", email, password),
-    [studentAuth],
+    (input: LoginInput) => {
+      if (!isValidLogin(input.firstName, input.lastName, input.password)) {
+        return Promise.resolve<AuthResult>({ ok: false, error: "invalid" });
+      }
+      return postAuth("/api/auth/login", {
+        firstName: input.firstName.trim(),
+        lastName: input.lastName.trim(),
+        password: input.password,
+      });
+    },
+    [postAuth],
   );
 
   const register = useCallback(
-    (email: string, password: string) =>
-      studentAuth("/api/auth/register", email, password),
-    [studentAuth],
+    (input: RegisterInput) => {
+      if (
+        !isValidRegistration(
+          input.firstName,
+          input.lastName,
+          input.phone,
+          input.password,
+          input.confirmPassword,
+        )
+      ) {
+        return Promise.resolve<AuthResult>({ ok: false, error: "invalid" });
+      }
+      return postAuth("/api/auth/register", {
+        firstName: input.firstName.trim(),
+        lastName: input.lastName.trim(),
+        phone: input.phone.trim(),
+        password: input.password,
+        confirmPassword: input.confirmPassword,
+      });
+    },
+    [postAuth],
   );
 
   const teacherLogin = useCallback(
@@ -111,7 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       if (res.status === 429) return { ok: false, error: "locked" };
       if (!res.ok) return { ok: false, error: "invalid" };
-      setUser({ id: "teacher", email: null, role: "teacher" });
+      setUser({ id: "teacher", firstName: null, lastName: null, role: "teacher" });
       setInClass(true);
       return { ok: true };
     },

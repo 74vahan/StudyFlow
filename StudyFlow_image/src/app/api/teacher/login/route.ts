@@ -52,6 +52,6 @@ export async function POST(request: NextRequest) {
   }
 
   recordSuccess(key);
-  await setSessionCookie({ userId: TEACHER_ID, email: null, role: "teacher" });
+  await setSessionCookie({ userId: TEACHER_ID, firstName: null, lastName: null, role: "teacher" });
   return NextResponse.json({ ok: true, role: "teacher" });
 }

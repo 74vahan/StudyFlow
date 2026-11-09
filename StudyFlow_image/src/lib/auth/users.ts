@@ -4,39 +4,52 @@ import type { RowDataPacket } from "mysql2";
 import { getPool } from "@/lib/db/mysql";
 
 // User persistence + password hashing (MySQL). Node runtime only.
+//
+// Identity model: a student logs in with first name + last name + password. The
+// phone number is the unique account key — two people may share a name, but not
+// a phone. When names collide, the password tells the accounts apart here on the
+// server (each row stays distinct thanks to its unique phone).
 
 export interface UserRecord {
   id: string;
-  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
 }
 
 interface UserRow extends RowDataPacket {
   id: string;
-  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
   password_hash: string;
 }
 
 const BCRYPT_ROUNDS = 10;
 
-export class EmailTakenError extends Error {
+export class PhoneTakenError extends Error {
   constructor() {
-    super("email_taken");
-    this.name = "EmailTakenError";
+    super("phone_taken");
+    this.name = "PhoneTakenError";
   }
 }
 
 export async function createUser(
-  email: string,
+  firstName: string,
+  lastName: string,
+  phone: string,
   password: string,
 ): Promise<UserRecord> {
   const id = crypto.randomUUID();
-  const normalized = email.trim().toLowerCase();
+  const first = firstName.trim();
+  const last = lastName.trim();
+  const normalizedPhone = phone.trim();
   const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS);
 
   try {
     await getPool().execute(
-      "INSERT INTO users (id, email, password_hash) VALUES (?, ?, ?)",
-      [id, normalized, passwordHash],
+      "INSERT INTO users (id, first_name, last_name, phone, password_hash) VALUES (?, ?, ?, ?, ?)",
+      [id, first, last, normalizedPhone, passwordHash],
     );
   } catch (err) {
     if (
@@ -45,30 +58,46 @@ export async function createUser(
       "code" in err &&
       err.code === "ER_DUP_ENTRY"
     ) {
-      throw new EmailTakenError();
+      throw new PhoneTakenError();
     }
     throw err;
   }
 
-  return { id, email: normalized };
+  return { id, firstName: first, lastName: last, phone: normalizedPhone };
 }
 
-// Returns the user record on a correct password, otherwise null (wrong email or
-// password are indistinguishable to the caller, on purpose).
+// Permanently deletes a student account. The FK chain cascades the deletion:
+// users → class_members → tasks (all ON DELETE CASCADE in the schema), so this
+// single statement wipes the account, its class membership and all its tasks.
+export async function deleteUser(userId: string): Promise<void> {
+  await getPool().execute("DELETE FROM users WHERE id = ?", [userId]);
+}
+
+// Returns the user record when the name matches a row whose password is correct,
+// otherwise null. Name matching is case-insensitive (DB collation). If several
+// rows share the name, the password selects the right account; each row is
+// distinct via its unique phone.
 export async function verifyCredentials(
-  email: string,
+  firstName: string,
+  lastName: string,
   password: string,
 ): Promise<UserRecord | null> {
-  const normalized = email.trim().toLowerCase();
+  const first = firstName.trim();
+  const last = lastName.trim();
   const [rows] = await getPool().execute<UserRow[]>(
-    "SELECT id, email, password_hash FROM users WHERE email = ? LIMIT 1",
-    [normalized],
+    "SELECT id, first_name, last_name, phone, password_hash FROM users WHERE first_name = ? AND last_name = ?",
+    [first, last],
   );
-  const row = rows[0];
-  if (!row) return null;
 
-  const ok = await bcrypt.compare(password, row.password_hash);
-  if (!ok) return null;
-
-  return { id: row.id, email: row.email };
+  for (const row of rows) {
+    if (await bcrypt.compare(password, row.password_hash)) {
+      return {
+        id: row.id,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        phone: row.phone,
+      };
+    }
+  }
+  return null;
 }

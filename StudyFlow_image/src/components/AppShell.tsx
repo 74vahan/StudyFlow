@@ -38,12 +38,15 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <header className="sticky top-0 z-10 border-b border-foreground/10 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6">
-          <Link href="/dashboard" className="text-lg font-semibold">
+      <header className="sticky top-0 z-10 border-b-[4px] border-ink bg-surface/95 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 sm:px-6">
+          <Link
+            href="/dashboard"
+            className="text-xl font-bold tracking-tight text-tangerine"
+          >
             {t("app.name")}
           </Link>
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-2">
             {links.map((link) => {
               const active =
                 pathname === link.href || pathname.startsWith(`${link.href}/`);
@@ -51,10 +54,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "bg-foreground/10 text-foreground"
-                      : "text-foreground/70 hover:bg-foreground/5"
+                  className={`rf-navlink text-sm ${
+                    active ? "rf-navlink-active" : ""
                   }`}
                 >
                   {link.label}
@@ -64,8 +65,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
           <div className="ml-auto flex items-center gap-3">
             <LanguageSwitcher />
-            <span className="hidden text-sm text-foreground/60 sm:inline">
-              {user.email}
+            <span className="hidden text-sm text-ink/70 sm:inline">
+              {[user.firstName, user.lastName].filter(Boolean).join(" ")}
             </span>
             <button
               type="button"
@@ -73,7 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 await logout();
                 router.replace("/login");
               }}
-              className="rounded-md border border-foreground/15 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-foreground/5"
+              className="btn btn-secondary btn-sm"
             >
               {t("nav.logout")}
             </button>

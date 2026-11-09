@@ -20,9 +20,8 @@ interface TaskFormProps {
   onCancel: () => void;
 }
 
-const field =
-  "w-full rounded-md border border-foreground/15 bg-background px-3 py-2 text-sm outline-none focus:border-foreground/40";
-const label = "block text-sm font-medium mb-1";
+const field = "rf-field text-sm";
+const label = "block text-sm font-semibold mb-1";
 
 export function TaskForm({
   initial,
@@ -80,7 +79,7 @@ export function TaskForm({
           className={field}
           aria-invalid={Boolean(error)}
         />
-        {error && <p className="mt-1 text-sm text-rose-600">{error}</p>}
+        {error && <p className="mt-1 text-sm font-semibold text-coral">{error}</p>}
       </div>
 
       <div>
@@ -146,17 +145,10 @@ export function TaskForm({
       </div>
 
       <div className="flex items-center gap-3 pt-2">
-        <button
-          type="submit"
-          className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
-        >
+        <button type="submit" className="btn btn-primary">
           {submitLabel}
         </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-md border border-foreground/15 px-4 py-2 text-sm font-medium transition-colors hover:bg-foreground/5"
-        >
+        <button type="button" onClick={onCancel} className="btn btn-secondary">
           {t("common.cancel")}
         </button>
       </div>

@@ -20,26 +20,26 @@ export default function PendingPage() {
   }, [ready, user, inClass, router]);
 
   return (
-    <main className="relative flex min-h-full flex-1 flex-col overflow-hidden bg-[#0b0f0d] text-white">
+    <main className="relative flex min-h-full flex-1 flex-col overflow-hidden bg-paper text-ink">
       {/* Playable Snake running in the background */}
       <SnakeGame />
 
       <header className="relative z-10 flex items-center justify-between px-6 py-4">
-        <span className="text-lg font-semibold">{t("app.name")}</span>
+        <span className="text-xl font-bold text-tangerine">{t("app.name")}</span>
         <LanguageSwitcher />
       </header>
 
       <section className="relative z-10 flex flex-1 items-center justify-center px-4">
-        <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/55 p-8 text-center shadow-xl backdrop-blur-sm">
-          <h1 className="text-2xl font-semibold">{t("pending.title")}</h1>
-          <p className="mt-2 text-balance text-white/70">{t("pending.message")}</p>
-          <p className="mt-1 text-sm text-white/50">{t("pending.hint")}</p>
+        <div className="rf-card rf-enter w-full max-w-md p-8 text-center">
+          <h1 className="text-3xl font-bold">{t("pending.title")}</h1>
+          <p className="mt-2 text-balance text-ink/70">{t("pending.message")}</p>
+          <p className="mt-1 text-sm text-ink/50">{t("pending.hint")}</p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="rounded-md bg-white px-4 py-2 text-sm font-medium text-[#0b0f0d] transition-opacity hover:opacity-90"
+              className="btn btn-primary btn-sm"
             >
               {t("pending.refresh")}
             </button>
@@ -49,13 +49,13 @@ export default function PendingPage() {
                 await logout();
                 router.replace("/login");
               }}
-              className="rounded-md border border-white/25 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/10"
+              className="btn btn-secondary btn-sm"
             >
               {t("nav.logout")}
             </button>
           </div>
 
-          <p className="mt-5 text-xs text-white/40">{t("pending.play")}</p>
+          <p className="mt-5 text-xs font-semibold text-ink/50">{t("pending.play")}</p>
         </div>
       </section>
     </main>

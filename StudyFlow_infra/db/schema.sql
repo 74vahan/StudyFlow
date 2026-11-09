@@ -16,11 +16,18 @@ CREATE DATABASE IF NOT EXISTS studyflow
 USE studyflow;
 
 -- 1. Users (students) --------------------------------------------------------
+-- A student is identified for display by first + last name. The phone number is
+-- the unique account key: two people may share a name, but never a phone. Login
+-- is by name + password; when names collide the password (and the unique phone
+-- behind each row) tells the accounts apart on the server.
 CREATE TABLE IF NOT EXISTS users (
   id            CHAR(36)      NOT NULL PRIMARY KEY,
-  email         VARCHAR(255)  NOT NULL UNIQUE,
+  first_name    VARCHAR(100)  NOT NULL,
+  last_name     VARCHAR(100)  NOT NULL,
+  phone         VARCHAR(30)   NOT NULL UNIQUE,
   password_hash VARCHAR(255)  NOT NULL,
-  created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_at    TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_users_name (last_name, first_name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 2. Class membership (the single class) -------------------------------------

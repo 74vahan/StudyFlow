@@ -4,7 +4,9 @@
 
 export interface Student {
   id: string;
-  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   inClass: boolean;
   joinedAt: string | null;
 }
@@ -24,4 +26,12 @@ export async function addStudent(id: string): Promise<void> {
 export async function removeStudent(id: string): Promise<void> {
   const res = await fetch(`/api/teacher/students/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error(`Remove failed: ${res.status}`);
+}
+
+// Permanently delete the student's account (and all their data).
+export async function deleteStudentAccount(id: string): Promise<void> {
+  const res = await fetch(`/api/teacher/students/${id}/account`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
 }

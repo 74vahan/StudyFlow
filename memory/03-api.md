@@ -6,12 +6,17 @@
 - Клиент ходит через `fetch`; `assignee_id` для ученика берётся из сессии, не из запроса.
 
 ## Авторизация ученика
+> С 2026-11-07: identity — имя+фамилия+пароль (не email); `phone` — уникальный ключ.
+> Сессия (JWT) хранит `firstName`/`lastName` (не email). Валидация — `lib/auth/validation.ts`
+> (`isValidRegistration` / `isValidLogin`). `verifyCredentials` ищет по имени+фамилии и
+> перебирает совпадения по bcrypt (разводит однофамильцев).
+
 | Роут | Метод | Назначение |
 |---|---|---|
-| `/api/auth/register` | POST | создать ученика (bcrypt) + сессия (role student). 409 если email занят |
-| `/api/auth/login` | POST | проверка bcrypt → сессия; ответ `{user, inClass}` |
+| `/api/auth/register` | POST | `{firstName,lastName,phone,password,confirmPassword}` → ученик (bcrypt) + сессия. 409 если `phone` занят (`PhoneTakenError`) |
+| `/api/auth/login` | POST | `{firstName,lastName,password}` → verifyCredentials → сессия; ответ `{user, inClass}` |
 | `/api/auth/logout` | POST | удалить cookie (общий для обеих ролей) |
-| `/api/auth/me` | GET | `{user:{id,email,role}, inClass}` — используется клиентом для гейта |
+| `/api/auth/me` | GET | `{user:{id,firstName,lastName,role}, inClass}` — гейт на клиенте |
 
 ## Авторизация учителя (PIN)
 | Роут | Метод | Назначение |
@@ -23,7 +28,8 @@
 | Роут | Метод | Назначение |
 |---|---|---|
 | `/api/teacher/students` | GET | все ученики + флаг `inClass` |
-| `/api/teacher/students/[id]` | POST / DELETE | добавить в класс / убрать (каскад задач) |
+| `/api/teacher/students/[id]` | POST / DELETE | добавить в класс / убрать из класса (аккаунт остаётся) |
+| `/api/teacher/students/[id]/account` | DELETE | **полное удаление аккаунта** (`deleteUser` → `DELETE FROM users`): каскад FK убирает и членство, и задачи. Проверено. (2026-11-10) |
 
 ## Задачи (роль-зависимо)
 | Роут | Метод | Учитель | Ученик |

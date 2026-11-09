@@ -14,7 +14,8 @@ export const TEACHER_ID = "teacher";
 
 export interface SessionUser {
   userId: string;
-  email: string | null; // null for the teacher (no account)
+  firstName: string | null; // null for the teacher (no account)
+  lastName: string | null;
   role: Role;
 }
 
@@ -29,7 +30,11 @@ function getSecret(): Uint8Array {
 }
 
 export async function signSession(user: SessionUser): Promise<string> {
-  return new SignJWT({ email: user.email ?? "", role: user.role })
+  return new SignJWT({
+    firstName: user.firstName ?? "",
+    lastName: user.lastName ?? "",
+    role: user.role,
+  })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.userId)
     .setIssuedAt()
@@ -47,8 +52,15 @@ export async function verifySession(
     const { payload } = await jwtVerify(token, getSecret());
     if (!payload.sub) return null;
     const role: Role = payload.role === "teacher" ? "teacher" : "student";
-    const email = typeof payload.email === "string" && payload.email ? payload.email : null;
-    return { userId: payload.sub, email, role };
+    const firstName =
+      typeof payload.firstName === "string" && payload.firstName
+        ? payload.firstName
+        : null;
+    const lastName =
+      typeof payload.lastName === "string" && payload.lastName
+        ? payload.lastName
+        : null;
+    return { userId: payload.sub, firstName, lastName, role };
   } catch {
     return null; // invalid / expired / tampered
   }
