@@ -30,4 +30,11 @@
 - Альтернатива — контейнер/GCP: `StudyFlow_infra/Dockerfile`. Проверить прод-ссылку в incognito (AC-10).
 
 ## Статус
-⬜ Деплоя пока нет. Код и миграция под облако готовы (SSL-пул, `schema.cloud.sql`, `scripts/migrate-db.mjs`, `npm run db:migrate`). Осталось: завести Aiven, накатить схему, выставить env в Vercel, Root Directory, redeploy. Не закоммичено.
+✅ **Задеплоено и работает на Vercel** (2026-11-10). Прод: `https://studyflow-74vahan.vercel.app`, БД — Aiven free MySQL. Вживую проверены: лендинг, вход учителя по PIN, регистрация ученика (/pending), чтение списка у учителя, удаление. Прод-база чистая.
+- Root Directory = `StudyFlow_image`, env (DATABASE_URL, DATABASE_CA_CERT[base64], AUTH_SECRET, TEACHER_PIN_HASH_B64) заданы на Production.
+- **Грабли, которые ловили (на будущее):**
+  1. Monorepo → без Root Directory build падал «No Next.js version detected».
+  2. env применяются только к НОВОМУ деплою → после правок обязателен Redeploy; «Redeploy» на старом деплое пересобирает старый коммит.
+  3. Deployment Protection (Vercel Authentication) по умолчанию закрывала сайт за логином Vercel → Settings → Deployment Protection → Disabled.
+  4. **Главная причина 500 на DB-роутах:** в Vercel в `DATABASE_URL` попал замаскированный плейсхолдер `CLICK_TO:REVEAL_PASSWORD` вместо реальных `avnadmin`+пароль (Access denied 1045). Диагностировали временным `/api/health/db` (потом удалён).
+- Диагностика «почему 500 только на БД»: auth/me и teacher/login (без БД) = 200, а teacher/students и auth/register (с БД) = 500 → проблема подключения, а не кода.

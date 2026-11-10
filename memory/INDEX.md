@@ -95,8 +95,13 @@
 - **БД под serverless:** пул `src/lib/db/mysql.ts` научен TLS (`DATABASE_CA_CERT`/`DATABASE_SSL`), `connectionLimit` 10→5. `.env.example` дополнен.
 - **Провайдер: Aiven free MySQL** (выбор пользователя; PlanetScale теперь платный). Схема `StudyFlow_infra/db/schema.cloud.sql` (без CREATE DATABASE/USE). Миграция `scripts/migrate-db.mjs` + `npm run db:migrate` (mysql2, Windows-friendly). TS чист, build/скрипт проверены. Не закоммичено. Детали — [05-infra-deploy.md](05-infra-deploy.md).
 
+### Деплой на Vercel — РАБОТАЕТ ✅ (2026-11-10)
+> Прод: `https://studyflow-74vahan.vercel.app`, БД — Aiven free MySQL. Схема накачена (`npm run db:migrate`). Вживую (браузер) проверены: лендинг, вход учителя по PIN 123456, регистрация ученика → /pending, список у учителя (Registered students: 1), удаление. Прод-база чистая.
+- Грабли и их решения — в [05-infra-deploy.md](05-infra-deploy.md): Root Directory=StudyFlow_image; env только для нового деплоя (нужен Redeploy); Deployment Protection закрывала сайт; **главная причина 500 — в DATABASE_URL был плейсхолдер `CLICK_TO:REVEAL_PASSWORD` вместо avnadmin+пароль**. Диагностировали временным `/api/health/db` (удалён).
+
 ### Дальше
 - ⛔ AI-фича ОТМЕНЕНА (решение пользователя 2026-11-03): AC-07 вне объёма, не предлагать.
-- ⬜ Деплой — **Vercel** (решение 2026-11-10, сменили с GCP). Остаётся: Aiven завести, схему накатить, env в Vercel, Root Directory, redeploy. (GCP-вариант — запасной: `StudyFlow_infra/Dockerfile`.)
+- ✅ Деплой на Vercel готов. Запасной вариант (GCP/контейнер): `StudyFlow_infra/Dockerfile`.
+- ⬜ Пользователю: сменить пароль Aiven (мелькал в переписке) и убрать плейсхолдерные legacy-строки, если остались.
 - ⬜ Пользователю для нового окружения: `StudyFlow_image/.env.local` (`DATABASE_URL`, `AUTH_SECRET`, `TEACHER_PIN_HASH_B64`); локально проще `docker compose up` из `StudyFlow_infra/`.
 - ⬜ Пуш на GitHub (приватный репо) — по просьбе.
