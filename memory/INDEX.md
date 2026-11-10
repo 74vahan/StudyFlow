@@ -89,8 +89,14 @@
 - **Ученик:** задачи разнесены по статусу — `/tasks` (To do), `/tasks/in-progress`, `/tasks/done` через общий `StudentTasksView` (вкладки-ссылки). Дашборд не менялся (по решению пользователя).
 - i18n (en/ru/hy) дополнена (overview, deleteAccount, confirmDeleteAccount, studentsDesc/tasksDesc, totalStudents/inClassCount). ✅ Сборка чистая; вживую проверены все страницы учителя и вкладки ученика (временный ученик создан и удалён). Не закоммичено.
 
+### Деплой на Vercel: подготовка БД ✅ (2026-11-10)
+> Пользователь сменил решение: деплой на **Vercel** (не GCP). Сборка падала — Root Directory не выставлен на подпапку. Локальный `npm run build` проходит (exit 0) → код ок.
+- **Причина падения build:** монорепо, приложение в `StudyFlow_image/`; Vercel собирал из корня → «No Next.js version detected». Фикс: Root Directory → `StudyFlow_image` (настройка дашборда, не код).
+- **БД под serverless:** пул `src/lib/db/mysql.ts` научен TLS (`DATABASE_CA_CERT`/`DATABASE_SSL`), `connectionLimit` 10→5. `.env.example` дополнен.
+- **Провайдер: Aiven free MySQL** (выбор пользователя; PlanetScale теперь платный). Схема `StudyFlow_infra/db/schema.cloud.sql` (без CREATE DATABASE/USE). Миграция `scripts/migrate-db.mjs` + `npm run db:migrate` (mysql2, Windows-friendly). TS чист, build/скрипт проверены. Не закоммичено. Детали — [05-infra-deploy.md](05-infra-deploy.md).
+
 ### Дальше
 - ⛔ AI-фича ОТМЕНЕНА (решение пользователя 2026-11-03): AC-07 вне объёма, не предлагать.
-- ⬜ Деплой — **в GCP** (решение 2026-11-03, не Vercel): Cloud Run + Cloud SQL (MySQL); образ standalone уже готов (`StudyFlow_infra/Dockerfile`).
+- ⬜ Деплой — **Vercel** (решение 2026-11-10, сменили с GCP). Остаётся: Aiven завести, схему накатить, env в Vercel, Root Directory, redeploy. (GCP-вариант — запасной: `StudyFlow_infra/Dockerfile`.)
 - ⬜ Пользователю для нового окружения: `StudyFlow_image/.env.local` (`DATABASE_URL`, `AUTH_SECRET`, `TEACHER_PIN_HASH_B64`); локально проще `docker compose up` из `StudyFlow_infra/`.
 - ⬜ Пуш на GitHub (приватный репо) — по просьбе.

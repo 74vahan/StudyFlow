@@ -12,16 +12,22 @@
 
 ## Переменные окружения
 См. `.env.example` (все — только сервер, не `NEXT_PUBLIC_`):
-- `DATABASE_URL` — строка подключения MySQL (mysql://user:pass@host:3306/studyflow).
+- `DATABASE_URL` — строка подключения MySQL (mysql://user:pass@host:3306/db).
 - `AUTH_SECRET` — длинный случайный секрет для подписи сессий (JWT).
-- `ANTHROPIC_API_KEY` — ключ Claude API.
+- `TEACHER_PIN_HASH_B64` — base64(bcrypt-хеш PIN учителя).
+- `DATABASE_CA_CERT` (опц.) — CA-сертификат провайдера (PEM или base64) → TLS с проверкой. Для Aiven обязателен.
+- `DATABASE_SSL=true` (опц.) — TLS без своего CA (проверка по системному хранилищу; для провайдеров с публичным CA).
+- `DATABASE_CONNECTION_LIMIT` (опц., по умолчанию 5) — размер пула на инстанс (serverless).
+- `ANTHROPIC_API_KEY` — не используется (AI-фича отменена).
 
-## Деплой (план, День 13)
-- Платформа: **Vercel** (skill `deploy-to-vercel`). **Root Directory → `StudyFlow_image`**.
-- Прод-база: облачный MySQL (Railway/Aiven/PlanetScale) — Vercel serverless, локальный MySQL не подойдёт.
-- В Vercel задать `DATABASE_URL`, `AUTH_SECRET`, `ANTHROPIC_API_KEY` (Production). Схему (`StudyFlow_infra/db/schema.sql`) выполнить один раз на облачной БД.
-- Альтернатива — контейнер: `StudyFlow_infra/Dockerfile` (+ compose). Детали в `StudyFlow_infra/docs/deploy.md`.
-- Проверить прод-ссылку в incognito, не только localhost (AC-10).
+## Деплой на Vercel (выбрано 2026-11-10; БД — Aiven free)
+- **Root Directory → `StudyFlow_image`** (иначе Vercel не видит `next` в корневом package.json → build падает «No Next.js version detected»).
+- Пул MySQL теперь поддерживает TLS: `src/lib/db/mysql.ts` читает `DATABASE_CA_CERT`/`DATABASE_SSL`; `connectionLimit` уменьшен до 5 (serverless).
+- **Прод-БД: Aiven free MySQL** (настоящий MySQL 8; PlanetScale отпал — платный). SSL обязателен (CA дают).
+- Схему на облаке накатывать `StudyFlow_infra/db/schema.cloud.sql` (без `CREATE DATABASE`/`USE`) скриптом `npm run db:migrate` из `StudyFlow_image` (нужен cloud `DATABASE_URL`+`DATABASE_CA_CERT` в `.env.local`). Node 20.6+ (`--env-file`).
+- В Vercel (Production) задать: `DATABASE_URL`, `DATABASE_CA_CERT`, `AUTH_SECRET`, `TEACHER_PIN_HASH_B64`.
+- `.env.local` в DATABASE_URL для Aiven убрать хвост `?ssl-mode=REQUIRED` (mysql2 его не понимает; TLS берём из `DATABASE_CA_CERT`).
+- Альтернатива — контейнер/GCP: `StudyFlow_infra/Dockerfile`. Проверить прод-ссылку в incognito (AC-10).
 
 ## Статус
-⬜ Деплоя пока нет. Локальный запуск настроен.
+⬜ Деплоя пока нет. Код и миграция под облако готовы (SSL-пул, `schema.cloud.sql`, `scripts/migrate-db.mjs`, `npm run db:migrate`). Осталось: завести Aiven, накатить схему, выставить env в Vercel, Root Directory, redeploy. Не закоммичено.
